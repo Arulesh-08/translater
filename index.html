@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Food Ordering Website</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+    margin: 0;
+    transition: 0.3s;
+}
+
+/* DARK MODE */
+.dark {
+    background: #121212;
+    color: white;
+}
+
+/* HEADER */
+header {
+    background: #ff3d00;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    position: sticky;
+    top: 0;
+}
+
+/* THEME BUTTON */
+.theme-btn {
+    float: right;
+    background: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+/* MOVING BANNER */
+.banner {
+    background: black;
+    overflow: hidden;
+    padding: 10px;
+}
+.food-anim {
+    width: 150px;
+    animation: moveFood 8s linear infinite;
+}
+@keyframes moveFood {
+    0% { transform: translateX(-200px); }
+    100% { transform: translateX(100%); }
+}
+
+/* MENU CARDS */
+.menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    width: 220px;
+    margin: 10px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px gray;
+    padding: 10px;
+    text-align: center;
+}
+
+.dark .card {
+    background: #1e1e1e;
+}
+
+/* FOOD IMAGES */
+.card img {
+    width: 100%;
+    height: 140px;
+    border-radius: 10px;
+}
+
+/* ROTATE IMAGE */
+.rotate-food {
+    animation: rotate 8s linear infinite;
+}
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* BOUNCE IMAGE */
+.bounce-food {
+    animation: bounce 2s infinite;
+}
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+/* BUTTONS */
+button {
+    padding: 6px 12px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background: darkgreen;
+}
+
+/* CART */
+#cart {
+    background: white;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+}
+.dark #cart {
+    background: #1e1e1e;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🍽️ Online Food Ordering
+<button class="theme-btn" onclick="toggleTheme()">🌙 Theme</button>
+</header>
+
+<!-- MOVING FOOD BANNER -->
+<div class="banner">
+    <img src="https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif" class="food-anim">
+</div>
+
+<h2 style="text-align:center;">🥗 Veg Menu</h2>
+<div class="menu-container">
+
+<div class="card">
+<img src="https://i.imgur.com/5K4pM0H.jpg" class="bounce-food">
+<h3>Idli</h3>
+<p>₹20</p>
+Qty: <input type="number" id="q1" value="1">
+<button onclick="addToCart('Idli',20,'q1')">Add</button>
+</div>
+
+<div class="card">
+<img src="https://i.imgur.com/lQyZ1s8.jpg" class="rotate-food">
+<h3>Dosa</h3>
+<p>₹40</p>
+Qty: <input type="number" id="q2" value="1">
+<button onclick="addToCart('Dosa',40,'q2')">Add</button>
+</div>
+
+<div class="card">
+<img src="https://i.imgur.com/1wXzY4N.jpg">
+<h3>Veg Biryani</h3>
+<p>₹120</p>
+Qty: <input type="number" id="q3" value="1">
+<button onclick="addToCart('Veg Biryani',120,'q3')">Add</button>
+</div>
+
+</div>
+
+<h2 style="text-align:center;">🍗 Non-Veg Menu</h2>
+<div class="menu-container">
+
+<div class="card">
+<img src="https://i.imgur.com/Jp4cTgX.jpg" class="bounce-food">
+<h3>Chicken Biryani</h3>
+<p>₹180</p>
+Qty: <input type="number" id="q4" value="1">
+<button onclick="addToCart('Chicken Biryani',180,'q4')">Add</button>
+</div>
+
+<div class="card">
+<img src="https://i.imgur.com/zq9p5Zr.jpg">
+<h3>Fish Fry</h3>
+<p>₹150</p>
+Qty: <input type="number" id="q5" value="1">
+<button onclick="addToCart('Fish Fry',150,'q5')">Add</button>
+</div>
+
+<div class="card">
+<img src="https://i.imgur.com/7qR5vYc.jpg" class="rotate-food">
+<h3>Mutton Curry</h3>
+<p>₹250</p>
+Qty: <input type="number" id="q6" value="1">
+<button onclick="addToCart('Mutton Curry',250,'q6')">Add</button>
+</div>
+
+</div>
+
+<!-- CART SECTION -->
+<div id="cart">
+<h2>🛒 Cart</h2>
+<div id="cartItems">No items added</div>
+<p id="subtotal">Subtotal: ₹0</p>
+<p id="gst">GST (5%): ₹0</p>
+<p id="total">Total: ₹0</p>
+<p id="time"></p>
+<button onclick="confirmOrder()">Confirm Order</button>
+</div>
+
+<script>
+let cart = [];
+let subtotal = 0;
+
+// Add to Cart
+function addToCart(name, price, qtyId) {
+    let qty = document.getElementById(qtyId).value;
+    let cost = price * qty;
+
+    cart.push(name + " x" + qty + " = ₹" + cost);
+    subtotal += cost;
+
+    updateCart();
+}
+
+// Update Bill
+function updateCart() {
+    document.getElementById("cartItems").innerHTML = cart.join("<br>");
+    document.getElementById("subtotal").innerHTML = "Subtotal: ₹" + subtotal;
+
+    let gst = subtotal * 0.05;
+    let total = subtotal + gst;
+
+    document.getElementById("gst").innerHTML = "GST (5%): ₹" + gst.toFixed(2);
+    document.getElementById("total").innerHTML = "Total: ₹" + total.toFixed(2);
+}
+
+// Confirm Order
+function confirmOrder() {
+    if (subtotal == 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    let time = Math.floor(Math.random() * 20) + 20;
+    document.getElementById("time").innerHTML = "⏰ Delivery Time: " + time + " minutes";
+
+    alert("Order Confirmed! Thank you 😊");
+}
+
+// Theme Toggle
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
